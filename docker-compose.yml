@@ -16,7 +16,7 @@ services:
 
   catalog:
     build:
-      context: ./catalog
+      context: catalogService
     container_name: catalog_service
     depends_on:
       - db
@@ -28,7 +28,7 @@ services:
 
   order:
     build:
-      context: ./order
+      context: orderService
     container_name: order_service
     depends_on:
       - db
