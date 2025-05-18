@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"FinalProject/handlers"
+	"catalog/handlers"
 	"github.com/gorilla/mux"
 )
 

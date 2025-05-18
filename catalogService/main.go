@@ -1,14 +1,13 @@
 package main
 
 import (
-	"FinalProject/db"
-	"FinalProject/routes"
+	"catalog/routes"
 	"log"
 	"net/http"
 )
 
 func main() {
-	db.InitDB()
+
 	router := routes.SetupRouter()
 
 	log.Println("Server running on :8080")

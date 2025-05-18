@@ -1,8 +1,9 @@
 package handlers
 
 import (
-	"FinalProject/db"
-	"FinalProject/models"
+	"catalog/models"
+	//"FinalProject/db"
+	//"FinalProject/models"
 	"database/sql"
 	"fmt"
 	"github.com/gorilla/mux"
