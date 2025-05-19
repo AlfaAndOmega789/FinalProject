@@ -5,15 +5,15 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func SetupRouter() *mux.Router {
+func SetupRouter(productHandler *handlers.ProductHandler) *mux.Router {
 	router := mux.NewRouter()
 
-	router.HandleFunc("/products", handlers.GetProducts).Methods("GET")
-	router.HandleFunc("/products/{id}", handlers.GetProductByID).Methods("GET")
-	router.HandleFunc("/products/", handlers.CreateProduct).Methods("POST")
-	router.HandleFunc("/products/{id}", handlers.UpdateProduct).Methods("PUT")
-	router.HandleFunc("/products/{id}", handlers.DeleteProduct).Methods("DELETE")
-	router.HandleFunc("/categories/", handlers.GetCategories).Methods("GET")
+	router.HandleFunc("/products", productHandler.GetProducts).Methods("GET")
+	router.HandleFunc("/products/{id}", productHandler.GetProductByID).Methods("GET")
+	router.HandleFunc("/products/", productHandler.CreateProduct).Methods("POST")
+	router.HandleFunc("/products/{id}", productHandler.UpdateProduct).Methods("PUT")
+	router.HandleFunc("/products/{id}", productHandler.DeleteProduct).Methods("DELETE")
+	router.HandleFunc("/categories/", productHandler.GetCategories).Methods("GET")
 
 	return router
 }
