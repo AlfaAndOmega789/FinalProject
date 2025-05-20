@@ -2,7 +2,11 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
+	"order/db"
+	"order/handlers"
+	"order/routes"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -10,6 +14,11 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/", handler)
-	http.ListenAndServe(":8000", nil)
+	database := db.InitDB()
+	productHandler := &handlers.ProductHandler{DB: database}
+
+	router := routes.SetupRouter(productHandler)
+
+	log.Println("Сервер запущен на :8081")
+	http.ListenAndServe(":8081", router)
 }
