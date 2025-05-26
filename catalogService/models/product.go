@@ -10,6 +10,6 @@ type Product struct {
 	Name        string
 	Description sql.NullString
 	Price       float64
-	CategoryID  sql.NullInt64 // если category_id тоже может быть NULL
+	CategoryID  sql.NullInt64
 	CreatedAt   time.Time
 }

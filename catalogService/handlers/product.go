@@ -11,9 +11,13 @@ import (
 	"strconv"
 )
 
+type ProductHandler struct {
+	DB *sql.DB
+}
+
 // GET /products
-func GetProducts(w http.ResponseWriter, r *http.Request) {
-	rows, err := db.DB.Query("SELECT id, name, description, price, category_id, created_at FROM products")
+func (db *ProductHandler) GetProducts(w http.ResponseWriter, r *http.Request) {
+	var rows, err = db.DB.Query("SELECT id, name, description, price, category_id, created_at FROM products")
 	if err != nil {
 		http.Error(w, "Ошибка запроса DB", http.StatusInternalServerError)
 		return
@@ -31,7 +35,7 @@ func GetProducts(w http.ResponseWriter, r *http.Request) {
 }
 
 // GET /products/{id}
-func GetProductByID(w http.ResponseWriter, r *http.Request) {
+func (db *ProductHandler) GetProductByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	idStr := vars["id"]
 	id, err := strconv.Atoi(idStr)
@@ -58,7 +62,7 @@ func GetProductByID(w http.ResponseWriter, r *http.Request) {
 }
 
 // POST /products
-func CreateProduct(w http.ResponseWriter, r *http.Request) {
+func (db *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	name := r.FormValue("name")
 	description := r.FormValue("description")
 	priceStr := r.FormValue("price")
@@ -99,7 +103,7 @@ func CreateProduct(w http.ResponseWriter, r *http.Request) {
 }
 
 // PUT /products/{id}
-func UpdateProduct(w http.ResponseWriter, r *http.Request) {
+func (db *ProductHandler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	idStr := vars["id"]
 	id, err := strconv.Atoi(idStr)
@@ -147,7 +151,7 @@ func UpdateProduct(w http.ResponseWriter, r *http.Request) {
 }
 
 // DELETE /products/{id}
-func DeleteProduct(w http.ResponseWriter, r *http.Request) {
+func (db *ProductHandler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	idStr := vars["id"]
 	id, err := strconv.Atoi(idStr)
@@ -166,7 +170,7 @@ func DeleteProduct(w http.ResponseWriter, r *http.Request) {
 }
 
 // GET /categories
-func GetCategories(w http.ResponseWriter, r *http.Request) {
+func (db *ProductHandler) GetCategories(w http.ResponseWriter, r *http.Request) {
 	rows, err := db.DB.Query("SELECT id, name, created_at FROM categories")
 	if err != nil {
 		http.Error(w, "Ошибка запроса категорий", http.StatusInternalServerError)
