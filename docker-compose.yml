@@ -73,7 +73,7 @@ services:
       - GOTOOLCHAIN=auto
       - DATABASE_URL=postgres://myuser:mypassword@db:5432/mydb
     ports:
-      - "8086:8086"
+      - "8085:8085"
 
 volumes:
   db_data:
