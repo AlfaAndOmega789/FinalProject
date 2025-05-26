@@ -37,6 +37,43 @@ services:
       - DATABASE_URL=postgres://myuser:mypassword@db:5432/mydb
     ports:
       - "8082:8082"
+      -
+
+  reviews:
+      build:
+        context: reviewsService
+      container_name: reviews_service
+      depends_on:
+        - db
+      environment:
+        - GOTOOLCHAIN=auto
+        - DATABASE_URL=postgres://myuser:mypassword@db:5432/mydb
+      ports:
+        - "8083:8083"
+
+  auth:
+    build:
+      context: authService
+    container_name: auth_service
+    depends_on:
+      - db
+    environment:
+      - GOTOOLCHAIN=auto
+      - DATABASE_URL=postgres://myuser:mypassword@db:5432/mydb
+    ports:
+      - "8084:8084"
+
+  background:
+    build:
+      context: backgroundService
+    container_name: background_service
+    depends_on:
+      - db
+    environment:
+      - GOTOOLCHAIN=auto
+      - DATABASE_URL=postgres://myuser:mypassword@db:5432/mydb
+    ports:
+      - "8086:8086"
 
 volumes:
   db_data:

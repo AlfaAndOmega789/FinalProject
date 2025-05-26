@@ -14,6 +14,6 @@ func main() {
 
 	router := routes.SetupRouter(productHandler)
 
-	log.Println("Сервер запущен на :8080")
-	http.ListenAndServe(":8080", router)
+	log.Println("Сервер запущен на :8081")
+	http.ListenAndServe(":8081", router)
 }
