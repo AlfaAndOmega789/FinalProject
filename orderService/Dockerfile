@@ -4,7 +4,9 @@ ENV GOTOOLCHAIN=auto
 
 WORKDIR /app
 
-COPY . .
+COPY go.mod ./
+COPY go.sum ./
+COPY .env ./
 
 RUN go build -o main .
 
