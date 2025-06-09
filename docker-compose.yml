@@ -22,9 +22,9 @@ services:
     container_name: catalog_service
     depends_on:
       - db
-#    environment:
-#      - GOTOOLCHAIN=auto
-#      - DATABASE_URL=postgres://myuser:mypassword@db:5432/mydb
+    environment:
+      - GOTOOLCHAIN=auto
+      - DATABASE_URL=${DATABASE_URL}
     ports:
       - "8081:8081"
 
@@ -36,6 +36,9 @@ services:
     container_name: order_service
     depends_on:
       - db
+    environment:
+      - GOTOOLCHAIN=auto
+      - DATABASE_URL=${DATABASE_URL}
     ports:
       - "8082:8082"
       -
@@ -48,6 +51,9 @@ services:
       container_name: reviews_service
       depends_on:
         - db
+      environment:
+        - GOTOOLCHAIN=auto
+        - DATABASE_URL=${DATABASE_URL}
       ports:
         - "8083:8083"
 
@@ -59,6 +65,9 @@ services:
     container_name: auth_service
     depends_on:
       - db
+    environment:
+      - GOTOOLCHAIN=auto
+      - DATABASE_URL=${DATABASE_URL}
     ports:
       - "8084:8084"
 
@@ -70,6 +79,9 @@ services:
     container_name: background_service
     depends_on:
       - db
+    environment:
+      - GOTOOLCHAIN=auto
+      - DATABASE_URL=${DATABASE_URL}
     ports:
       - "8085:8085"
 
