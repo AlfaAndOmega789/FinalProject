@@ -1,9 +1,8 @@
-package handlers
+package handler
 
 import (
-	"catalog/models"
-	//"FinalProject/db"
-	//"FinalProject/models"
+	"catalog/internal/catalog/entity"
+	"catalog/internal/catalog/usecase"
 	"database/sql"
 	"fmt"
 	"github.com/gorilla/mux"
@@ -12,30 +11,28 @@ import (
 )
 
 type ProductHandler struct {
-	DB *sql.DB
+	UseCase usecase.ProductUsecase
+}
+
+func NewProductHandler(uc usecase.ProductUsecase) *ProductHandler {
+	return &ProductHandler{UseCase: uc}
 }
 
 // GET /products
-func (db *ProductHandler) GetProducts(w http.ResponseWriter, r *http.Request) {
-	var rows, err = db.DB.Query("SELECT id, name, description, price, category_id, created_at FROM products")
+func (h *ProductHandler) GetProducts(w http.ResponseWriter, r *http.Request) {
+	products, err := h.UseCase.GetAll()
 	if err != nil {
-		http.Error(w, "Ошибка запроса DB", http.StatusInternalServerError)
+		http.Error(w, "Ошибка при получении продуктов", http.StatusInternalServerError)
 		return
 	}
-	defer rows.Close()
 
-	for rows.Next() {
-		var p models.Product
-		err := rows.Scan(&p.ID, &p.Name, &p.Description, &p.Price, &p.CategoryID, &p.CreatedAt)
-		if err != nil {
-			continue
-		}
+	for _, p := range products {
 		fmt.Fprintf(w, "ID: %d, Name: %s, Price: %.2f\n", p.ID, p.Name, p.Price)
 	}
 }
 
 // GET /products/{id}
-func (db *ProductHandler) GetProductByID(w http.ResponseWriter, r *http.Request) {
+func (h *ProductHandler) GetProductByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	idStr := vars["id"]
 	id, err := strconv.Atoi(idStr)
@@ -44,16 +41,9 @@ func (db *ProductHandler) GetProductByID(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	var p models.Product
-	err = db.DB.QueryRow("SELECT id, name, description, price, category_id, created_at FROM products WHERE id = $1", id).
-		Scan(&p.ID, &p.Name, &p.Description, &p.Price, &p.CategoryID, &p.CreatedAt)
-
+	p, err := h.UseCase.GetByID(id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			http.Error(w, "Продукт не найден", http.StatusNotFound)
-		} else {
-			http.Error(w, "Ошибка запроса DB", http.StatusInternalServerError)
-		}
+		http.Error(w, "Продукт не найден", http.StatusNotFound)
 		return
 	}
 
@@ -62,7 +52,7 @@ func (db *ProductHandler) GetProductByID(w http.ResponseWriter, r *http.Request)
 }
 
 // POST /products
-func (db *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
+func (h *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	name := r.FormValue("name")
 	description := r.FormValue("description")
 	priceStr := r.FormValue("price")
@@ -91,11 +81,16 @@ func (db *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) 
 		categoryID = sql.NullInt64{Valid: false}
 	}
 
-	query := `INSERT INTO products (name, description, price, category_id) VALUES ($1, $2, $3, $4) RETURNING id`
-	var id int
-	err = db.DB.QueryRow(query, name, description, price, categoryID).Scan(&id)
+	product := entity.Product{
+		Name:        name,
+		Description: sql.NullString{String: description, Valid: description != ""},
+		Price:       price,
+		CategoryID:  categoryID,
+	}
+
+	id, err := h.UseCase.Create(product)
 	if err != nil {
-		http.Error(w, "Ошибка при вставке продукта", http.StatusInternalServerError)
+		http.Error(w, "Ошибка при создании продукта", http.StatusInternalServerError)
 		return
 	}
 
@@ -103,12 +98,12 @@ func (db *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) 
 }
 
 // PUT /products/{id}
-func (db *ProductHandler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
+func (h *ProductHandler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	idStr := vars["id"]
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, "Неверный продукт ID", http.StatusBadRequest)
+		http.Error(w, "Неверный ID", http.StatusBadRequest)
 		return
 	}
 
@@ -124,7 +119,7 @@ func (db *ProductHandler) UpdateProduct(w http.ResponseWriter, r *http.Request) 
 
 	price, err := strconv.ParseFloat(priceStr, 64)
 	if err != nil {
-		http.Error(w, "Ошибка в цене", http.StatusBadRequest)
+		http.Error(w, "Неверная цена", http.StatusBadRequest)
 		return
 	}
 
@@ -140,8 +135,14 @@ func (db *ProductHandler) UpdateProduct(w http.ResponseWriter, r *http.Request) 
 		categoryID = sql.NullInt64{Valid: false}
 	}
 
-	query := `UPDATE products SET name = $1, description = $2, price = $3, category_id = $4 WHERE id = $5`
-	_, err = db.DB.Exec(query, name, description, price, categoryID, id)
+	product := entity.Product{
+		Name:        name,
+		Description: sql.NullString{String: description, Valid: description != ""},
+		Price:       price,
+		CategoryID:  categoryID,
+	}
+
+	err = h.UseCase.Update(id, product)
 	if err != nil {
 		http.Error(w, "Ошибка обновления", http.StatusInternalServerError)
 		return
@@ -151,39 +152,20 @@ func (db *ProductHandler) UpdateProduct(w http.ResponseWriter, r *http.Request) 
 }
 
 // DELETE /products/{id}
-func (db *ProductHandler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
+func (h *ProductHandler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	idStr := vars["id"]
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, "Нет продукта с таким ID", http.StatusBadRequest)
+		http.Error(w, "Неверный ID", http.StatusBadRequest)
 		return
 	}
 
-	_, err = db.DB.Exec("DELETE FROM products WHERE id = $1", id)
+	err = h.UseCase.Delete(id)
 	if err != nil {
-		http.Error(w, "Ошибка, продукт не удалился", http.StatusInternalServerError)
+		http.Error(w, "Ошибка удаления", http.StatusInternalServerError)
 		return
 	}
 
 	fmt.Fprintf(w, "Продукт с ID %d удален\n", id)
-}
-
-// GET /categories
-func (db *ProductHandler) GetCategories(w http.ResponseWriter, r *http.Request) {
-	rows, err := db.DB.Query("SELECT id, name, created_at FROM categories")
-	if err != nil {
-		http.Error(w, "Ошибка запроса категорий", http.StatusInternalServerError)
-		return
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var c models.Category
-		err := rows.Scan(&c.ID, &c.Name, &c.CreatedAt)
-		if err != nil {
-			continue
-		}
-		fmt.Fprintf(w, "ID: %s, Name: %s\n", c.ID, c.Name)
-	}
 }

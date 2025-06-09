@@ -1,4 +1,4 @@
-package models
+package entity
 
 import (
 	"database/sql"
@@ -12,4 +12,10 @@ type Product struct {
 	Price       float64
 	CategoryID  sql.NullInt64
 	CreatedAt   time.Time
+}
+
+type Category struct {
+	ID        string
+	Name      string
+	CreatedAt time.Time
 }
