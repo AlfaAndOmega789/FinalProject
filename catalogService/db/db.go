@@ -3,14 +3,11 @@ package db
 import (
 	"database/sql"
 	"fmt"
-	"github.com/joho/godotenv"
 	"log"
 	"os"
 )
 
 func InitDB() *sql.DB {
-
-	_ = godotenv.Load("D:\\docker\\go_project\\catalogService\\cmd\\.env")
 
 	dbHost := os.Getenv("DB_HOST")
 	dbPort := os.Getenv("DB_PORT")
@@ -30,8 +27,6 @@ func InitDB() *sql.DB {
 	if err != nil {
 		log.Fatal("Ошибка подключения к БД:", err)
 	}
-
-	fmt.Println("db is nil?", db == nil)
 
 	if err := db.Ping(); err != nil {
 		log.Fatal("БД недоступна:", err)

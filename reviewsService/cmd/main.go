@@ -1,4 +1,4 @@
-package reviewsService
+package cmd
 
 import (
 	"log"

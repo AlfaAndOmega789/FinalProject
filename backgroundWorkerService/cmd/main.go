@@ -1,4 +1,4 @@
-package backgroundWorkerService
+package cmd
 
 import (
 	"log"

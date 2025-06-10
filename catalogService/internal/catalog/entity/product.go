@@ -13,9 +13,3 @@ type Product struct {
 	CategoryID  sql.NullInt64
 	CreatedAt   time.Time
 }
-
-type Category struct {
-	ID        string
-	Name      string
-	CreatedAt time.Time
-}
