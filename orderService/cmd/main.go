@@ -9,16 +9,14 @@ import (
 	"order/routes"
 )
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Order service is working!")
-}
-
 func main() {
-	database := db.InitDB()
-	productHandler := &handlers.ProductHandler{DB: database}
+	dbConn := db.InitDB()
+
+	//productRepo := repository.NewProductRepository(dbConn)
+	//productUsecase := usecase.NewProductUsecase(productRepo)
+	//productHandler := handler.NewProductHandler(productUsecase)
 
 	router := routes.SetupRouter(productHandler)
-
 	log.Println("Сервер запущен на :8082")
-	http.ListenAndServe(":8082", router)
+	log.Fatal(http.ListenAndServe(":8082", router))
 }
