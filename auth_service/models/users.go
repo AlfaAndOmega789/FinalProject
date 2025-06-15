@@ -8,7 +8,7 @@ import (
 type Users struct {
 	ID           string
 	Email        string
-	PasswordHash string //уникальный email, поправить
+	PasswordHash string
 	Name         string
 	RoleID       sql.NullInt64
 	CreatedAt    time.Time
