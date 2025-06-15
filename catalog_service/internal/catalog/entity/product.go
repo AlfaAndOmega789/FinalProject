@@ -1,15 +1,14 @@
 package entity
 
 import (
-	"database/sql"
 	"time"
 )
 
 type Product struct {
 	ID          int
 	Name        string
-	Description sql.NullString
+	Description string
 	Price       float64
-	CategoryID  sql.NullInt64
+	CategoryID  int
 	CreatedAt   time.Time
 }

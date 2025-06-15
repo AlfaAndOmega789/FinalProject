@@ -15,9 +15,9 @@ services:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
   catalog:
     env_file:
-      - ./catalogService/.env
+      - catalog_service/.env
     build:
-      context: catalogService
+      context: catalog_service
     container_name: catalog_service
     depends_on:
       - db
@@ -28,9 +28,9 @@ services:
       - "8081:8081"
   order:
     env_file:
-      - ./orderService/.env
+      - order_service/.env
     build:
-      context: orderService
+      context: order_service
     container_name: order_service
     depends_on:
       - db
@@ -41,9 +41,9 @@ services:
       - "8082:8082"
   reviews:
       env_file:
-        - ./reviewsService/.env
+        - reviews_service/.env
       build:
-        context: reviewsService
+        context: reviews_service
       container_name: reviews_service
       depends_on:
         - db
@@ -54,9 +54,9 @@ services:
         - "8083:8083"
   auth:
     env_file:
-      - ./authService/.env
+      - auth_service/.env
     build:
-      context: authService
+      context: auth_service
     container_name: auth_service
     depends_on:
       - db

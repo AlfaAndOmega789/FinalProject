@@ -10,12 +10,12 @@ import (
 )
 
 func InitDB() *sql.DB {
-	dbHost := os.Getenv("HOST")
-	dbPort := os.Getenv("PORT")
-	dbName := os.Getenv("DATABASE")
-	dbUser := os.Getenv("USER")
-	dbPassword := os.Getenv("PASSWORD")
-	sslMode := os.Getenv("SSLMODE")
+	dbHost := os.Getenv("DB_HOST")
+	dbPort := os.Getenv("DB_PORT")
+	dbName := os.Getenv("DB_NAME")
+	dbUser := os.Getenv("DB_USER")
+	dbPassword := os.Getenv("DB_PASSWORD")
+	sslMode := os.Getenv("DB_SSLMODE")
 
 	connStr := fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
