@@ -13,30 +13,70 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
-
   catalog:
+    env_file:
+      - catalog_service/.env
     build:
-      context: catalogService
+      context: catalog_service
     container_name: catalog_service
     depends_on:
       - db
     environment:
       - GOTOOLCHAIN=auto
-      - DATABASE_URL=postgres://myuser:mypassword@db:5432/mydb
+      - DATABASE_URL=${DATABASE_URL}
     ports:
       - "8081:8081"
-
   order:
+    env_file:
+      - order_service/.env
     build:
-      context: orderService
+      context: order_service
     container_name: order_service
     depends_on:
       - db
     environment:
       - GOTOOLCHAIN=auto
-      - DATABASE_URL=postgres://myuser:mypassword@db:5432/mydb
+      - DATABASE_URL=${DATABASE_URL}
     ports:
       - "8082:8082"
-
+  reviews:
+      env_file:
+        - reviews_service/.env
+      build:
+        context: reviews_service
+      container_name: reviews_service
+      depends_on:
+        - db
+      environment:
+        - GOTOOLCHAIN=auto
+        - DATABASE_URL=${DATABASE_URL}
+      ports:
+        - "8083:8083"
+  auth:
+    env_file:
+      - auth_service/.env
+    build:
+      context: auth_service
+    container_name: auth_service
+    depends_on:
+      - db
+    environment:
+      - GOTOOLCHAIN=auto
+      - DATABASE_URL=${DATABASE_URL}
+    ports:
+      - "8084:8084"
+  background:
+    env_file:
+      - ./backgroundService/.env
+    build:
+      context: backgroundService
+    container_name: background_service
+    depends_on:
+      - db
+    environment:
+      - GOTOOLCHAIN=auto
+      - DATABASE_URL=${DATABASE_URL}
+    ports:
+      - "8085:8085"
 volumes:
   db_data:
