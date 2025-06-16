@@ -19,8 +19,6 @@ func NewOrderHandler(u *usecase.OrderUsecase) *OrderHandler {
 
 func (h *OrderHandler) Create(w http.ResponseWriter, r *http.Request) {
 	order := &entity.Order{}
-
-	order.ID = r.FormValue("id")
 	order.UserID = r.FormValue("user_id")
 	order.Currency = r.FormValue("currency")
 	order.Status = r.FormValue("status")
@@ -44,7 +42,7 @@ func (h *OrderHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusCreated)
-	fmt.Fprintln(w, "Заказ создан")
+	fmt.Fprintf(w, "Заказ создан: %s", order.ID)
 }
 
 func (h *OrderHandler) Get(w http.ResponseWriter, r *http.Request) {
@@ -57,7 +55,7 @@ func (h *OrderHandler) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := fmt.Sprintf("Заказ: ID=%s, Статус=%s, Total=%.2f %s\n", order.ID, order.Status, order.TotalPrice, order.Currency)
+	response := fmt.Sprintf("Заказ: ID=%s, Статус=%s, Общая стоимость=%.2f %s\n", order.ID, order.Status, order.TotalPrice, order.Currency)
 	fmt.Fprint(w, response)
 }
 
@@ -82,11 +80,11 @@ func (h *OrderHandler) UpdateStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.usecase.Update(id, status); err != nil {
+	if err := h.usecase.UpdateStatus(id, status); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "Order %s updated to status: %s\n", id, status)
+	fmt.Fprintf(w, "Заказ %s обновленный статус: %s\n", id, status)
 }

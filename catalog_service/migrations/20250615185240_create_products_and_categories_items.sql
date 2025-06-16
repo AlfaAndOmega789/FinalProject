@@ -9,7 +9,7 @@ CREATE TABLE products (
                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 CREATE TABLE categories (
-                            id UUID PRIMARY KEY,
+                            id SERIAL PRIMARY KEY,
                             name TEXT NOT NULL,
                             created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -19,6 +19,5 @@ CREATE TABLE categories (
 -- +goose Down
 -- +goose StatementBegin
 DROP TABLE IF EXISTS products;
-DROP TABLE IF EXISTS orders;
 DROP TABLE IF EXISTS categories;
 -- +goose StatementEnd

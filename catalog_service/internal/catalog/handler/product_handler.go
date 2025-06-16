@@ -3,7 +3,6 @@ package handler
 import (
 	"catalog/internal/catalog/entity"
 	"catalog/internal/catalog/usecase"
-	"database/sql"
 	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -48,7 +47,7 @@ func (h *ProductHandler) GetProductByID(w http.ResponseWriter, r *http.Request) 
 	}
 
 	fmt.Fprintf(w, "ID: %d\nName: %s\nDescription: %s\nPrice: %.2f\nCategoryID: %v\nCreatedAt: %s\n",
-		p.ID, p.Name, p.Description.String, p.Price, p.CategoryID.Int64, p.CreatedAt.Format("2006-01-02 15:04:05"))
+		p.ID, p.Name, p.Description, p.Price, p.CategoryID, p.CreatedAt.Format("2006-01-02 15:04:05"))
 }
 
 // POST /products
@@ -69,23 +68,21 @@ func (h *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var categoryID sql.NullInt64
+	var categoryID int
 	if categoryIDStr != "" {
 		catID, err := strconv.ParseInt(categoryIDStr, 10, 64)
 		if err != nil {
 			http.Error(w, "Неверная category_id", http.StatusBadRequest)
 			return
 		}
-		categoryID = sql.NullInt64{Int64: catID, Valid: true}
-	} else {
-		categoryID = sql.NullInt64{Valid: false}
+		categoryID = int(catID)
 	}
 
 	product := entity.Product{
 		Name:        name,
-		Description: sql.NullString{String: description, Valid: description != ""},
+		Description: description,
 		Price:       price,
-		CategoryID:  categoryID,
+		CategoryID:  uint(categoryID),
 	}
 
 	id, err := h.UseCase.Create(product)
@@ -123,23 +120,21 @@ func (h *ProductHandler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var categoryID sql.NullInt64
+	var categoryID int
 	if categoryIDStr != "" {
 		catID, err := strconv.ParseInt(categoryIDStr, 10, 64)
 		if err != nil {
 			http.Error(w, "Неверный category_id", http.StatusBadRequest)
 			return
 		}
-		categoryID = sql.NullInt64{Int64: catID, Valid: true}
-	} else {
-		categoryID = sql.NullInt64{Valid: false}
+		categoryID = int(catID)
 	}
 
 	product := entity.Product{
 		Name:        name,
-		Description: sql.NullString{String: description, Valid: description != ""},
+		Description: description,
 		Price:       price,
-		CategoryID:  categoryID,
+		CategoryID:  uint(categoryID),
 	}
 
 	err = h.UseCase.Update(id, product)

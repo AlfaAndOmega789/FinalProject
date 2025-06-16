@@ -1,14 +1,12 @@
 package entity
 
-import (
-	"time"
-)
+import "time"
 
 type Product struct {
-	ID          int
-	Name        string
-	Description string
-	Price       float64
-	CategoryID  int
-	CreatedAt   time.Time
+	ID          int       `gorm:"primaryKey;autoIncrement"`
+	Name        string    `gorm:"type:varchar(255);not null"`
+	Description string    `gorm:"type:text"`
+	Price       float64   `gorm:"not null"`
+	CategoryID  uint      `gorm:"default:null"`
+	CreatedAt   time.Time `gorm:"autoCreateTime"`
 }
