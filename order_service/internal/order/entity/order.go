@@ -5,8 +5,8 @@ import (
 )
 
 type Order struct {
-	ID            int `gorm:"primaryKey;autoIncrement"`
-	UserID        int
+	ID            string `gorm:"type:uuid;default:gen_random_uuid();primaryKey"`
+	UserID        string
 	TotalPrice    float64
 	DeliveryPrice float64
 	Currency      string
@@ -15,11 +15,9 @@ type Order struct {
 }
 
 type OrderItem struct {
-	ID            int `gorm:"primaryKey;autoIncrement"`
-	UserID        int
-	TotalPrice    float64
-	DeliveryPrice float64
-	Currency      string
-	Status        string
-	CreatedAt     time.Time `gorm:"autoCreateTime"`
+	ID        string `gorm:"type:uuid;default:gen_random_uuid();primaryKey"`
+	OrderID   string
+	ProductID string
+	Quantity  int
+	UnitPrice float64
 }
