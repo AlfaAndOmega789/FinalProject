@@ -1,11 +1,9 @@
 package entity
 
-import (
-	"time"
-)
+import "time"
 
 type Category struct {
-	ID        int
-	Name      string
-	CreatedAt time.Time
+	ID        int       `gorm:"primaryKey;autoIncrement"`
+	Name      string    `gorm:"type:varchar(255);not null"`
+	CreatedAt time.Time `gorm:"autoCreateTime"`
 }
