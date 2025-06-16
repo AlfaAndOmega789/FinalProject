@@ -82,7 +82,7 @@ func (h *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 		Name:        name,
 		Description: description,
 		Price:       price,
-		CategoryID:  categoryID,
+		CategoryID:  uint(categoryID),
 	}
 
 	id, err := h.UseCase.Create(product)
@@ -134,7 +134,7 @@ func (h *ProductHandler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 		Name:        name,
 		Description: description,
 		Price:       price,
-		CategoryID:  categoryID,
+		CategoryID:  uint(categoryID),
 	}
 
 	err = h.UseCase.Update(id, product)
