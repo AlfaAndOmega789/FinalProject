@@ -1,17 +1,29 @@
 package cmd
 
 import (
+	"auth/internal/user/repository"
+	"gorm.io/gorm"
 	"log"
 	"net/http"
 	"reviews/routes"
 )
 
 func main() {
-	//router := routes.InitRoutes()
+	dbConn := db.InitDB()
+	runMigrations(dbConn)
 
-	log.Println("Catalog Service running on port 8084")
-	err := http.ListenAndServe(":8084", router)
+	authRepo := repository.NewAuthRepository(dbConn)
+	authUsecase := usecase.NewAuthUsecase(authRepo)
+	authHandler := handler.NewAuthHandler(authUsecase)
+
+	router := routes.SetupRouter(authHandler)
+	log.Println("Сервер запущен на :8084")
+	log.Fatal(http.ListenAndServe(":8084", router))
+}
+
+func runMigrations(db *gorm.DB) {
+	err := db.AutoMigrate(&entity.Auth{})
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Ошибка миграции:", err)
 	}
 }
