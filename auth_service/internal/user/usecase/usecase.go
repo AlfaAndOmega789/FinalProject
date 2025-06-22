@@ -1,7 +1,7 @@
 package usecase
 
 import (
-	"auth/internal/user/model"
+	"auth/internal/user/entity"
 	"auth/internal/user/repository"
 	"errors"
 	"time"
@@ -26,7 +26,7 @@ type UserUsecase struct {
 	repo repository.UserRepository
 }
 
-func NewUserUsecase(r repository.UserRepository) *UserUsecase {
+func NewAuthUsecase(r repository.UserRepository) *UserUsecase {
 	return &UserUsecase{repo: r}
 }
 
@@ -41,7 +41,7 @@ func (uc *UserUsecase) Register(input RegisterInput) error {
 		return err
 	}
 
-	newUser := &model.User{
+	newUser := &entity.User{
 		ID:           uuid.New(),
 		Email:        input.Email,
 		PasswordHash: string(hashedPassword),
@@ -53,7 +53,7 @@ func (uc *UserUsecase) Register(input RegisterInput) error {
 	return uc.repo.Create(newUser)
 }
 
-func (uc *UserUsecase) Login(email, password string) (*model.User, error) {
+func (uc *UserUsecase) Login(email, password string) (*entity.User, error) {
 	user, err := uc.repo.GetByEmail(email)
 	if err != nil || user == nil {
 		return nil, ErrInvalidCredential
@@ -65,4 +65,8 @@ func (uc *UserUsecase) Login(email, password string) (*model.User, error) {
 	}
 
 	return user, nil
+}
+
+func (uc *UserUsecase) GetByID(id string) (*entity.User, error) {
+	return uc.repo.GetByID(id)
 }

@@ -24,7 +24,6 @@ func InitDB() *gorm.DB {
 	)
 	fmt.Println("Строка подключения к БД:", connStr)
 
-	var err error
 	db, err := gorm.Open(postgres.Open(connStr), &gorm.Config{})
 	if err != nil {
 		log.Fatal("Ошибка подключения к БД:", err)

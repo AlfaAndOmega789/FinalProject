@@ -1,13 +1,15 @@
 package jwt
 
 import (
+	"errors"
 	"github.com/golang-jwt/jwt/v5"
 	"time"
 )
 
 var (
-	accessSecret  = []byte("your-access-secret")
-	refreshSecret = []byte("your-refresh-secret")
+	accessSecret    = []byte("your-access-secret")
+	refreshSecret   = []byte("your-refresh-secret")
+	ErrInvalidToken = errors.New("invalid token")
 )
 
 func GenerateTokens(userID string) (string, string, error) {
@@ -32,4 +34,31 @@ func GenerateTokens(userID string) (string, string, error) {
 	}
 
 	return accessStr, refreshStr, nil
+}
+
+func ParseToken(tokenStr string, isAccess bool) (string, error) {
+	secret := refreshSecret
+	if isAccess {
+		secret = accessSecret
+	}
+
+	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+		return secret, nil
+	})
+
+	if err != nil || !token.Valid {
+		return "", ErrInvalidToken
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || claims["user_id"] == nil {
+		return "", ErrInvalidToken
+	}
+
+	userID, ok := claims["user_id"].(string)
+	if !ok {
+		return "", ErrInvalidToken
+	}
+
+	return userID, nil
 }
