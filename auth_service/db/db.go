@@ -1,15 +1,16 @@
 package db
 
 import (
-	"database/sql"
 	"fmt"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 	"log"
 	"os"
 
 	_ "github.com/lib/pq"
 )
 
-func InitDB() *sql.DB {
+func InitDB() *gorm.DB {
 	dbHost := os.Getenv("DB_HOST")
 	dbPort := os.Getenv("DB_PORT")
 	dbName := os.Getenv("DB_NAME")
@@ -21,16 +22,11 @@ func InitDB() *sql.DB {
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 		dbHost, dbPort, dbUser, dbPassword, dbName, sslMode,
 	)
+	fmt.Println("Строка подключения к БД:", connStr)
 
-	db, err := sql.Open("postgres", connStr)
+	db, err := gorm.Open(postgres.Open(connStr), &gorm.Config{})
 	if err != nil {
 		log.Fatal("Ошибка подключения к БД:", err)
 	}
-
-	if err := db.Ping(); err != nil {
-		log.Fatal("БД недоступна:", err)
-	}
-
-	fmt.Println("Успешное подключение к БД")
 	return db
 }
