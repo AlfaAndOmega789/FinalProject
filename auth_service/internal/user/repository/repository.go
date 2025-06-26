@@ -10,6 +10,7 @@ type UserRepository interface {
 	Create(user *entity.User) error
 	GetByEmail(email string) (*entity.User, error)
 	GetByID(id string) (*entity.User, error)
+	GetRoleByID(id int) (*entity.Role, error)
 }
 
 type userRepo struct {
@@ -40,4 +41,13 @@ func (r *userRepo) GetByID(id string) (*entity.User, error) {
 		return nil, nil
 	}
 	return &user, err
+}
+
+func (r *userRepo) GetRoleByID(id int) (*entity.Role, error) {
+	var role entity.Role
+	err := r.db.First(&role, id).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
+	return &role, err
 }

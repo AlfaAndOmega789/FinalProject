@@ -20,6 +20,7 @@ type RegisterInput struct {
 var (
 	ErrUserExists        = errors.New("user already exists")
 	ErrInvalidCredential = errors.New("invalid credentials")
+	ErrRoleNotFound      = errors.New("role not found")
 )
 
 type UserUsecase struct {
@@ -34,6 +35,14 @@ func (uc *UserUsecase) Register(input RegisterInput) error {
 	existing, _ := uc.repo.GetByEmail(input.Email)
 	if existing != nil {
 		return ErrUserExists
+	}
+
+	role, err := uc.repo.GetRoleByID(input.RoleID)
+	if err != nil {
+		return err
+	}
+	if role == nil {
+		return ErrRoleNotFound
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
@@ -69,4 +78,8 @@ func (uc *UserUsecase) Login(email, password string) (*entity.User, error) {
 
 func (uc *UserUsecase) GetByID(id string) (*entity.User, error) {
 	return uc.repo.GetByID(id)
+}
+
+func (uc *UserUsecase) GetRoleByID(id int) (*entity.Role, error) {
+	return uc.repo.GetRoleByID(id)
 }

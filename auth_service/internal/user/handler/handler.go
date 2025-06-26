@@ -98,7 +98,14 @@ func (h *AuthHandler) Me(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprintf(w, "User: %s, Email: %s, RoleID: %d", user.Name, user.Email, user.RoleID)
+	role, _ := h.UserUC.GetRoleByID(user.RoleID)
+
+	roleName := "неизвестна"
+	if role != nil {
+		roleName = role.Name
+	}
+
+	fmt.Fprintf(w, "User: %s, Email: %s, Role: %s", user.Name, user.Email, roleName)
 }
 
 func (h *AuthHandler) Refresh(w http.ResponseWriter, r *http.Request) {
