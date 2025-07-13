@@ -1,35 +1,25 @@
 package db
 
 import (
-	"database/sql"
-	"fmt"
+	"context"
 	"log"
 	"os"
+	"time"
 
-	_ "github.com/lib/pq"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func InitDB() *sql.DB {
-	dbHost := os.Getenv("DB_HOST")
-	dbPort := os.Getenv("DB_PORT")
-	dbName := os.Getenv("DB_NAME")
-	dbUser := os.Getenv("DB_USER")
-	dbPassword := os.Getenv("DB_PASSWORD")
-	sslMode := os.Getenv("DB_SSLMODE")
+var Client *mongo.Client
 
-	connStr := fmt.Sprintf(
-		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
-		dbHost, dbPort, dbUser, dbPassword, dbName, sslMode,
-	)
-	db, err := sql.Open("mongodb", connStr)
+func InitMongo() {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(os.Getenv("MONGO_URI")))
 	if err != nil {
-		log.Fatal("Ошибка подключения к БД:", err)
+		log.Fatal(err)
 	}
 
-	if err := db.Ping(); err != nil {
-		log.Fatal("БД недоступна:", err)
-	}
-
-	fmt.Println("Успешное подключение к БД")
-	return db
+	Client = client
 }
