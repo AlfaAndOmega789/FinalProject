@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"reviews_service/handlers"
+	"reviews/handlers"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"

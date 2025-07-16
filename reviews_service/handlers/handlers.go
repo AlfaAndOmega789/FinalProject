@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"net/http"
-	"reviews_service/models"
-	"reviews_service/usecase"
+	"reviews/models"
+	"reviews/usecase"
 
 	"github.com/gin-gonic/gin"
 )

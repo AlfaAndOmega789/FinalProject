@@ -4,12 +4,12 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"reviews_service/db"
-	"reviews_service/handlers"
-	"reviews_service/migrations"
-	"reviews_service/repository"
-	"reviews_service/routes"
-	"reviews_service/usecase"
+	"reviews/db"
+	"reviews/handlers"
+	"reviews/migrations"
+	"reviews/repository"
+	"reviews/routes"
+	"reviews/usecase"
 
 	"github.com/gin-gonic/gin"
 )
@@ -29,7 +29,7 @@ func main() {
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8082"
+		port = "8083"
 	}
 
 	log.Println("Reviews Service запущен на порту :" + port)

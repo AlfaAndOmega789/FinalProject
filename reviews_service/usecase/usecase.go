@@ -2,8 +2,8 @@ package usecase
 
 import (
 	"context"
-	"reviews_service/models"
-	"reviews_service/repository"
+	"reviews/models"
+	"reviews/repository"
 )
 
 type ReviewUsecase struct {

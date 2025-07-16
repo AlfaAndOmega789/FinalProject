@@ -18,7 +18,11 @@ func InitMongo() {
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(os.Getenv("MONGO_URI")))
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Ошибка подключения к MongoDB:", err)
+	}
+
+	if err := client.Ping(ctx, nil); err != nil {
+		log.Fatal("MongoDB не отвечает:", err)
 	}
 
 	Client = client
