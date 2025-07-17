@@ -1,17 +1,37 @@
-package cmd
+package main
 
 import (
 	"log"
 	"net/http"
-	"reviewsService/routes"
+	"os"
+	"reviews/db"
+	"reviews/handlers"
+	"reviews/migrations"
+	"reviews/repository"
+	"reviews/routes"
+	"reviews/usecase"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	router := routes.InitRoutes()
+	db.InitMongo()
+	database := db.Client.Database("reviews_db")
 
-	log.Println("Catalog Service running on port 8083")
-	err := http.ListenAndServe(":8083", router)
-	if err != nil {
-		log.Fatal(err)
+	migrations.RunMigrations(database)
+
+	repo := repository.NewReviewRepository(database)
+	uc := usecase.NewReviewUsecase(repo)
+	handler := handlers.NewReviewHandler(uc)
+
+	router := gin.Default()
+	routes.InitRoutes(router, database, handler)
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8083"
 	}
+
+	log.Println("Reviews Service запущен на порту :" + port)
+	log.Fatal(http.ListenAndServe(":"+port, router))
 }

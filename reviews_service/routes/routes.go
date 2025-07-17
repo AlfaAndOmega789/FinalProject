@@ -1,15 +1,15 @@
 package routes
 
 import (
-	"github.com/gorilla/mux"
-	"net/http"
 	"reviews/handlers"
+
+	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func InitRoutes() *mux.Router {
-	router := mux.NewRouter()
-
-	router.HandleFunc("/reviews", handlers.GetProducts).Methods("GET")
-
-	return router
+func InitRoutes(r *gin.Engine, db *mongo.Database, h *handlers.ReviewHandler) {
+	r.POST("/reviews", h.AddReview)
+	r.GET("/reviews/:product_id", h.GetReviews)
+	r.DELETE("/reviews/:product_id", h.DeleteReviews)
+	r.PATCH("/reviews/:product_id", h.UpdateReview)
 }
