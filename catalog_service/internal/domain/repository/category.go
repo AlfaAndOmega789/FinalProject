@@ -1,7 +1,8 @@
 package repository
 
 import (
-	"catalog/internal/catalog/entity"
+	"catalog/internal/domain/entity"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -18,18 +19,19 @@ func (r *CategoryPostgresRepository) GetAll() ([]entity.Category, error) {
 	err := r.DB.Find(&categories).Error
 	return categories, err
 }
-func (r *CategoryPostgresRepository) Create(p entity.Category) (int, error) {
+
+func (r *CategoryPostgresRepository) Create(p entity.Category) (uuid.UUID, error) {
 	if err := r.DB.Create(&p).Error; err != nil {
-		return 0, err
+		return uuid.Nil, err
 	}
 	return p.ID, nil
 }
 
-func (r *CategoryPostgresRepository) Update(id int, p entity.Category) error {
+func (r *CategoryPostgresRepository) Update(id uuid.UUID, p entity.Category) error {
 	p.ID = id
 	return r.DB.Save(&p).Error
 }
 
-func (r *CategoryPostgresRepository) Delete(id int) error {
-	return r.DB.Delete(&entity.Category{}, id).Error
+func (r *CategoryPostgresRepository) Delete(id uuid.UUID) error {
+	return r.DB.Delete(&entity.Category{}, "id = ?", id).Error
 }
