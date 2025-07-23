@@ -1,7 +1,8 @@
 package usecase
 
 import (
-	"catalog/internal/catalog/entity"
+	"catalog/internal/domain/entity"
+	"github.com/google/uuid"
 )
 
 type productUsecase struct {
@@ -16,18 +17,18 @@ func (uc *productUsecase) GetAll() ([]entity.Product, error) {
 	return uc.repo.GetAll()
 }
 
-func (uc *productUsecase) GetByID(id int) (entity.Product, error) {
+func (uc *productUsecase) GetByID(id uuid.UUID) (entity.Product, error) {
 	return uc.repo.GetByID(id)
 }
 
-func (uc *productUsecase) Create(p entity.Product) (int, error) {
+func (uc *productUsecase) Create(p entity.Product) (uuid.UUID, error) {
 	return uc.repo.Create(p)
 }
 
-func (uc *productUsecase) Update(id int, p entity.Product) error {
+func (uc *productUsecase) Update(id uuid.UUID, p entity.Product) error {
 	return uc.repo.Update(id, p)
 }
 
-func (uc *productUsecase) Delete(id int) error {
+func (uc *productUsecase) Delete(id uuid.UUID) error {
 	return uc.repo.Delete(id)
 }
