@@ -1,13 +1,13 @@
 package routes
 
 import (
-	"catalog/internal/catalog/handler"
+	handler2 "catalog/internal/handler"
 	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
 )
 
-func SetupRouter(productHandler *handler.ProductHandler, categoryHandler *handler.CategoryHandler) *mux.Router {
+func SetupRouter(productHandler *handler2.ProductHandler, categoryHandler *handler2.CategoryHandler) *mux.Router {
 	router := mux.NewRouter()
 
 	router.HandleFunc("/products", productHandler.GetProducts).Methods("GET")

@@ -1,9 +1,10 @@
 package handler
 
 import (
-	"catalog/internal/catalog/entity"
-	"catalog/internal/catalog/usecase"
+	"catalog/internal/domain/entity"
+	"catalog/internal/domain/usecase"
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"
@@ -26,17 +27,16 @@ func (h *ProductHandler) GetProducts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, p := range products {
-		fmt.Fprintf(w, "ID: %d, Name: %s, Price: %.2f\n", p.ID, p.Name, p.Price)
+		fmt.Fprintf(w, "ID: %s, Name: %s, Price: %.2f\n", p.ID.String(), p.Name, p.Price)
 	}
 }
 
 // GET /products/{id}
 func (h *ProductHandler) GetProductByID(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	idStr := vars["id"]
-	id, err := strconv.Atoi(idStr)
+	idStr := mux.Vars(r)["id"]
+	id, err := uuid.Parse(idStr)
 	if err != nil {
-		http.Error(w, "Неверный продукт ID", http.StatusBadRequest)
+		http.Error(w, "Неверный UUID", http.StatusBadRequest)
 		return
 	}
 
@@ -46,8 +46,8 @@ func (h *ProductHandler) GetProductByID(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	fmt.Fprintf(w, "ID: %d\nName: %s\nDescription: %s\nPrice: %.2f\nCategoryID: %v\nCreatedAt: %s\n",
-		p.ID, p.Name, p.Description, p.Price, p.CategoryID, p.CreatedAt.Format("2006-01-02 15:04:05"))
+	fmt.Fprintf(w, "ID: %s\nName: %s\nDescription: %s\nPrice: %.2f\nCategoryID: %s\nCreatedAt: %s\n",
+		p.ID.String(), p.Name, p.Description, p.Price, p.CategoryID.String(), p.CreatedAt.Format("2010-01-02 10:04:05"))
 }
 
 // POST /products
@@ -57,8 +57,8 @@ func (h *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	priceStr := r.FormValue("price")
 	categoryIDStr := r.FormValue("category_id")
 
-	if name == "" || priceStr == "" {
-		http.Error(w, "Отсутствует имя или цена", http.StatusBadRequest)
+	if name == "" || priceStr == "" || categoryIDStr == "" {
+		http.Error(w, "Отсутствует имя, цена или category_id", http.StatusBadRequest)
 		return
 	}
 
@@ -68,21 +68,17 @@ func (h *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var categoryID int
-	if categoryIDStr != "" {
-		catID, err := strconv.ParseInt(categoryIDStr, 10, 64)
-		if err != nil {
-			http.Error(w, "Неверная category_id", http.StatusBadRequest)
-			return
-		}
-		categoryID = int(catID)
+	categoryID, err := uuid.Parse(categoryIDStr)
+	if err != nil {
+		http.Error(w, "Неверный UUID категории", http.StatusBadRequest)
+		return
 	}
 
 	product := entity.Product{
 		Name:        name,
 		Description: description,
 		Price:       price,
-		CategoryID:  uint(categoryID),
+		CategoryID:  categoryID,
 	}
 
 	id, err := h.UseCase.Create(product)
@@ -91,16 +87,15 @@ func (h *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprintf(w, "Продукт создан ID: %d\n", id)
+	fmt.Fprintf(w, "Продукт создан с ID: %s\n", id.String())
 }
 
 // PUT /products/{id}
 func (h *ProductHandler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	idStr := vars["id"]
-	id, err := strconv.Atoi(idStr)
+	idStr := mux.Vars(r)["id"]
+	id, err := uuid.Parse(idStr)
 	if err != nil {
-		http.Error(w, "Неверный ID", http.StatusBadRequest)
+		http.Error(w, "Неверный UUID", http.StatusBadRequest)
 		return
 	}
 
@@ -109,8 +104,8 @@ func (h *ProductHandler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	priceStr := r.FormValue("price")
 	categoryIDStr := r.FormValue("category_id")
 
-	if name == "" || priceStr == "" {
-		http.Error(w, "Отсутствует имя или цена", http.StatusBadRequest)
+	if name == "" || priceStr == "" || categoryIDStr == "" {
+		http.Error(w, "Отсутствует имя, цена или category_id", http.StatusBadRequest)
 		return
 	}
 
@@ -120,47 +115,40 @@ func (h *ProductHandler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var categoryID int
-	if categoryIDStr != "" {
-		catID, err := strconv.ParseInt(categoryIDStr, 10, 64)
-		if err != nil {
-			http.Error(w, "Неверный category_id", http.StatusBadRequest)
-			return
-		}
-		categoryID = int(catID)
+	categoryID, err := uuid.Parse(categoryIDStr)
+	if err != nil {
+		http.Error(w, "Неверный UUID категории", http.StatusBadRequest)
+		return
 	}
 
 	product := entity.Product{
 		Name:        name,
 		Description: description,
 		Price:       price,
-		CategoryID:  uint(categoryID),
+		CategoryID:  categoryID,
 	}
 
-	err = h.UseCase.Update(id, product)
-	if err != nil {
-		http.Error(w, "Ошибка обновления", http.StatusInternalServerError)
+	if err := h.UseCase.Update(id, product); err != nil {
+		http.Error(w, "Ошибка обновления продукта", http.StatusInternalServerError)
 		return
 	}
 
-	fmt.Fprintf(w, "Продукт с ID %d обновлен\n", id)
+	fmt.Fprintf(w, "Продукт с ID %s обновлён\n", id.String())
 }
 
 // DELETE /products/{id}
 func (h *ProductHandler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	idStr := vars["id"]
-	id, err := strconv.Atoi(idStr)
+	idStr := mux.Vars(r)["id"]
+	id, err := uuid.Parse(idStr)
 	if err != nil {
-		http.Error(w, "Неверный ID", http.StatusBadRequest)
+		http.Error(w, "Неверный UUID", http.StatusBadRequest)
 		return
 	}
 
-	err = h.UseCase.Delete(id)
-	if err != nil {
+	if err := h.UseCase.Delete(id); err != nil {
 		http.Error(w, "Ошибка удаления", http.StatusInternalServerError)
 		return
 	}
 
-	fmt.Fprintf(w, "Продукт с ID %d удален\n", id)
+	w.WriteHeader(http.StatusNoContent)
 }
