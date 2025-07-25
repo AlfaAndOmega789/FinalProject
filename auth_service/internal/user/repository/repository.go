@@ -3,6 +3,7 @@ package repository
 import (
 	"auth/internal/user/entity"
 	"errors"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -10,7 +11,7 @@ type UserRepository interface {
 	Create(user *entity.User) error
 	GetByEmail(email string) (*entity.User, error)
 	GetByID(id string) (*entity.User, error)
-	GetRoleByID(id int) (*entity.Role, error)
+	GetRoleByID(id uuid.UUID) (*entity.Role, error)
 }
 
 type userRepo struct {
@@ -43,9 +44,9 @@ func (r *userRepo) GetByID(id string) (*entity.User, error) {
 	return &user, err
 }
 
-func (r *userRepo) GetRoleByID(id int) (*entity.Role, error) {
+func (r *userRepo) GetRoleByID(id uuid.UUID) (*entity.Role, error) {
 	var role entity.Role
-	err := r.db.First(&role, id).Error
+	err := r.db.First(&role, "id = ?", id).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, nil
 	}

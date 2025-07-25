@@ -4,9 +4,9 @@ import (
 	"auth/internal/user/usecase"
 	"auth/pkg/jwt"
 	"fmt"
+	"github.com/google/uuid"
 	"io"
 	"net/http"
-	"strconv"
 	"strings"
 )
 
@@ -31,24 +31,19 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	password := formData["password"]
 	name := formData["name"]
 	roleIDStr := formData["role_id"]
-	roleID, _ := strconv.Atoi(roleIDStr)
+
+	roleUUID, err := uuid.Parse(roleIDStr)
+	if err != nil {
+		http.Error(w, "Некорректный UUID роли", http.StatusBadRequest)
+		return
+	}
 
 	err = h.UserUC.Register(usecase.RegisterInput{
 		Email:    email,
 		Password: password,
 		Name:     name,
-		RoleID:   roleID,
+		RoleID:   roleUUID,
 	})
-	if err != nil {
-		if err == usecase.ErrUserExists {
-			http.Error(w, "Пользователь уже существует", http.StatusConflict)
-			return
-		}
-		http.Error(w, "Ошибка сервера", http.StatusInternalServerError)
-		return
-	}
-
-	fmt.Fprint(w, "Пользователь создан")
 }
 
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {

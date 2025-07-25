@@ -24,7 +24,7 @@ services:
 
   catalog:
     env_file:
-      - catalog_service/.env
+      - catalog_service/internal/config/.env
     build:
       context: catalog_service
     container_name: catalog_service

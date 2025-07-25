@@ -14,7 +14,7 @@ type RegisterInput struct {
 	Email    string
 	Password string
 	Name     string
-	RoleID   int
+	RoleID   uuid.UUID
 }
 
 var (
@@ -80,6 +80,6 @@ func (uc *UserUsecase) GetByID(id string) (*entity.User, error) {
 	return uc.repo.GetByID(id)
 }
 
-func (uc *UserUsecase) GetRoleByID(id int) (*entity.Role, error) {
+func (uc *UserUsecase) GetRoleByID(id uuid.UUID) (*entity.Role, error) {
 	return uc.repo.GetRoleByID(id)
 }
