@@ -6,10 +6,10 @@ import (
 )
 
 type User struct {
-	ID           uuid.UUID `gorm:"type:uuid;primary_key"`
+	ID           uuid.UUID `gorm:"type:uuid;primaryKey"`
 	Email        string    `gorm:"uniqueIndex;not null"`
 	PasswordHash string    `gorm:"not null"`
 	Name         string
-	RoleID       int
+	RoleID       uuid.UUID `gorm:"type:uuid"`
 	CreatedAt    time.Time
 }
