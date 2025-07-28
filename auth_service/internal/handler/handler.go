@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"auth/internal/user/usecase"
+	"auth/internal/domain/usecase"
 	"auth/pkg/jwt"
 	"fmt"
 	"github.com/google/uuid"

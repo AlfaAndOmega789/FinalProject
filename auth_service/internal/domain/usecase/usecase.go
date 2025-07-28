@@ -1,8 +1,8 @@
 package usecase
 
 import (
-	"auth/internal/user/entity"
-	"auth/internal/user/repository"
+	entity2 "auth/internal/domain/entity"
+	"auth/internal/domain/repository"
 	"errors"
 	"time"
 
@@ -50,7 +50,7 @@ func (uc *UserUsecase) Register(input RegisterInput) error {
 		return err
 	}
 
-	newUser := &entity.User{
+	newUser := &entity2.User{
 		ID:           uuid.New(),
 		Email:        input.Email,
 		PasswordHash: string(hashedPassword),
@@ -62,7 +62,7 @@ func (uc *UserUsecase) Register(input RegisterInput) error {
 	return uc.repo.Create(newUser)
 }
 
-func (uc *UserUsecase) Login(email, password string) (*entity.User, error) {
+func (uc *UserUsecase) Login(email, password string) (*entity2.User, error) {
 	user, err := uc.repo.GetByEmail(email)
 	if err != nil || user == nil {
 		return nil, ErrInvalidCredential
@@ -76,10 +76,10 @@ func (uc *UserUsecase) Login(email, password string) (*entity.User, error) {
 	return user, nil
 }
 
-func (uc *UserUsecase) GetByID(id string) (*entity.User, error) {
+func (uc *UserUsecase) GetByID(id string) (*entity2.User, error) {
 	return uc.repo.GetByID(id)
 }
 
-func (uc *UserUsecase) GetRoleByID(id uuid.UUID) (*entity.Role, error) {
+func (uc *UserUsecase) GetRoleByID(id uuid.UUID) (*entity2.Role, error) {
 	return uc.repo.GetRoleByID(id)
 }
