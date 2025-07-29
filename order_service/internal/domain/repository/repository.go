@@ -2,7 +2,7 @@ package repository
 
 import (
 	"gorm.io/gorm"
-	"order/internal/order/entity"
+	"order/internal/domain/entity"
 )
 
 type OrderRepository struct {

@@ -24,7 +24,7 @@ services:
 
   catalog:
     env_file:
-      - catalog_service/internal/config/.env
+      - catalog_service/.env
     build:
       context: catalog_service
     container_name: catalog_service
@@ -67,7 +67,7 @@ services:
 
   auth:
     env_file:
-      - auth_service/internal/config/.env
+      - auth_service/.env
     build:
       context: auth_service
     container_name: auth_service

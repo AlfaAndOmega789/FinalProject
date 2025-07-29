@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/gorilla/mux"
-	"order/internal/order/handler"
+	"order/internal/handler"
 )
 
 func SetupRouter(orderHandler *handler.OrderHandler) *mux.Router {

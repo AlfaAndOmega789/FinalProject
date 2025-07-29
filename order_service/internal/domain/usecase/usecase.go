@@ -1,6 +1,6 @@
 package usecase
 
-import "order/internal/order/entity"
+import "order/internal/domain/entity"
 
 type OrderRepository interface {
 	GetByID(id string) (*entity.Order, error)

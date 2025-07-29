@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
-	"order/internal/order/entity"
-	"order/internal/order/usecase"
+	"order/internal/domain/entity"
+	"order/internal/domain/usecase"
 	"strconv"
 )
 
