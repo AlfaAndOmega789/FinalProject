@@ -1,22 +1,21 @@
 package main
 
 import (
+	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 	"os"
-	"reviews/db"
-	"reviews/handlers"
+	"reviews/internal/domain/repository"
+	"reviews/internal/domain/usecase"
+	"reviews/internal/handlers"
+	"reviews/internal/infrastructure/mongo"
+	"reviews/internal/infrastructure/routes"
 	"reviews/migrations"
-	"reviews/repository"
-	"reviews/routes"
-	"reviews/usecase"
-
-	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	db.InitMongo()
-	database := db.Client.Database("reviews_db")
+	mongo.InitMongo()
+	database := mongo.Client.Database("reviews_db")
 
 	migrations.RunMigrations(database)
 

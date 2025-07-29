@@ -1,11 +1,10 @@
 package handlers
 
 import (
-	"net/http"
-	"reviews/models"
-	"reviews/usecase"
-
 	"github.com/gin-gonic/gin"
+	"net/http"
+	"reviews/internal/domain/entity"
+	"reviews/internal/domain/usecase"
 )
 
 type ReviewHandler struct {
@@ -17,7 +16,7 @@ func NewReviewHandler(uc *usecase.ReviewUsecase) *ReviewHandler {
 }
 
 func (h *ReviewHandler) AddReview(c *gin.Context) {
-	var r models.Review
+	var r entity.Review
 	if err := c.ShouldBind(&r); err != nil {
 		c.String(http.StatusBadRequest, err.Error())
 		return
@@ -49,7 +48,7 @@ func (h *ReviewHandler) DeleteReviews(c *gin.Context) {
 }
 
 func (h *ReviewHandler) UpdateReview(c *gin.Context) {
-	var r models.Review
+	var r entity.Review
 	if err := c.ShouldBind(&r); err != nil {
 		c.String(http.StatusBadRequest, err.Error())
 		return
