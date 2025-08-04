@@ -1,35 +1,19 @@
 package postgres
 
 import (
-	"database/sql"
-	"fmt"
-	"log"
-	"os"
-
-	_ "github.com/lib/pq"
+	"background/internal/domain/entity"
+	"background/internal/domain/repository"
+	"gorm.io/gorm"
 )
 
-func InitDB() *sql.DB {
-	dbHost := os.Getenv("DB_HOST")
-	dbPort := os.Getenv("DB_PORT")
-	dbName := os.Getenv("DB_NAME")
-	dbUser := os.Getenv("DB_USER")
-	dbPassword := os.Getenv("DB_PASSWORD")
-	sslMode := os.Getenv("DB_SSLMODE")
+type CurrencyGormRepository struct {
+	db *gorm.DB
+}
 
-	connStr := fmt.Sprintf(
-		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
-		dbHost, dbPort, dbUser, dbPassword, dbName, sslMode,
-	)
-	db, err := sql.Open("postgres", connStr)
-	if err != nil {
-		log.Fatal("Ошибка подключения к БД:", err)
-	}
+func NewCurrencyGormRepository(db *gorm.DB) repository.CurrencyRepository {
+	return &CurrencyGormRepository{db: db}
+}
 
-	if err := db.Ping(); err != nil {
-		log.Fatal("БД недоступна:", err)
-	}
-
-	fmt.Println("Успешное подключение к БД")
-	return db
+func (r *CurrencyGormRepository) SaveBatch(currencies []entity.Currency) error {
+	return r.db.Save(&currencies).Error
 }
