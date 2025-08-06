@@ -1,12 +1,12 @@
 package main
 
 import (
-	"catalog/db"
-	"catalog/internal/catalog/entity"
-	"catalog/internal/catalog/handler"
-	"catalog/internal/catalog/repository"
-	"catalog/internal/catalog/usecase"
-	"catalog/routes"
+	"catalog/internal/domain/entity"
+	"catalog/internal/domain/repository"
+	"catalog/internal/domain/usecase"
+	handler2 "catalog/internal/handler"
+	"catalog/internal/infrastructure/postgres"
+	"catalog/pkg/routes"
 	_ "github.com/lib/pq"
 	"gorm.io/gorm"
 	"log"
@@ -14,16 +14,16 @@ import (
 )
 
 func main() {
-	dbConn := db.InitDB()
+	dbConn := postgres.InitDB()
 	runMigrations(dbConn)
 
 	productRepo := repository.NewProductRepository(dbConn)
 	productUsecase := usecase.NewProductUsecase(productRepo)
-	productHandler := handler.NewProductHandler(productUsecase)
+	productHandler := handler2.NewProductHandler(productUsecase)
 
 	categoryRepo := repository.NewCategoryRepository(dbConn)
 	categoryUsecase := usecase.NewCategoryUsecase(categoryRepo)
-	categoryHandler := handler.NewCategoryHandler(categoryUsecase)
+	categoryHandler := handler2.NewCategoryHandler(categoryUsecase)
 
 	router := routes.SetupRouter(productHandler, categoryHandler)
 	log.Println("Сервер запущен на :8081")

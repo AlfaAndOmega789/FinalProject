@@ -4,16 +4,16 @@ import (
 	"gorm.io/gorm"
 	"log"
 	"net/http"
-	"order/db"
-	"order/internal/order/entity"
-	"order/internal/order/handler"
-	"order/internal/order/repository"
-	"order/internal/order/usecase"
-	"order/routes"
+	"order/internal/domain/entity"
+	"order/internal/domain/repository"
+	"order/internal/domain/usecase"
+	"order/internal/handler"
+	"order/internal/infrastructure/postgres"
+	"order/pkg/routes"
 )
 
 func main() {
-	dbConn := db.InitDB()
+	dbConn := postgres.InitDB()
 	runMigrations(dbConn)
 
 	orderRepo := repository.NewOrderRepository(dbConn)
